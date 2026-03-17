@@ -1,0 +1,11 @@
+[
+    {
+        "prompt": "Hi, are you a helpful assistant?",
+        "entity_familiarity": 0.0,
+        "context_coherence": 0.0,
+        "ethical_pressure": 0.0,
+        "prompt_structure": 0.0,
+        "lang": 0.0
+    }
+    
+]
