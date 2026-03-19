@@ -4,9 +4,10 @@ Experiment setup for the thesis *"Sensitivity Analysis of Evaluation Awareness i
 
 ## What it does
 
-1. Trains a linear probe on a contrastive dataset of evaluation-aware vs. non-aware model responses.
-2. Runs a sensitivity dataset through the model and scores each prompt using the probe.
-3. Saves augmented results to `output/` — including generated text, probe projection score, and binary verdict.
+1. Trains one linear probe for each layer of the model on a contrastive dataset of evaluation-aware vs. non-aware model responses.
+2. Analyzes which probe is best based on how well it distinguishes between WMDP questions vs. WMDP questions + a deploy prompt.
+3. Runs a sensitivity dataset through the model and scores each prompt using the winning probe.
+4. Saves augmented results to `output/` — including generated text, probe projection score, and binary verdict.
 
 ## Credits
 
@@ -31,14 +32,20 @@ pip install -r requirements.txt
 ## Usage
 
 ```bash
-# Quick test with Llama 1B
+# All layers (default) — trains probes on all layers, evaluates on WMDP to find best
 python run.py --test-mode
+
+# Specific layers only — evaluates on WMDP to pick best among specified layers
+python run.py --test-mode --layers 4,8,12
+
+# Single layer (skips WMDP automatically)
+python run.py --test-mode --layers 8
 
 # Full run with Llama 70B
 python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda
 
-# Skip probe retraining
-python run.py --load-probe output/probe.pt
+# Skip probe retraining (auto-detects single vs multi-layer .pt format)
+python run.py --test-mode --load-probe output/probes.pt
 ```
 
 ## File Layout
@@ -48,9 +55,10 @@ run.py                          # Main orchestration script
 src/
   model.py                      # Model loading + generation (HookedTransformer)
   probe.py                      # Probe training and inference
+  wmdp.py                       # Load WMDP dataset for probe analysis
 datasets/
   contrastive_dataset.json      # Training data (from evaluation-awareness-probing)
   sensitivity_dataset.json      # Evaluation prompts
 output/
-  probe.pt                      # Saved probe weights
+  probes.pt                     # Saved probe weights (one per layer)
 ```

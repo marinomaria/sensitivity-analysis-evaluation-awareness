@@ -3,23 +3,28 @@
 Main entry point for the exp-setup experiment.
 
 Steps:
-  1. Train a linear probe on datasets/contrastive_dataset.json
-  2. Run datasets/sensitivity_dataset.json through the model
-  3. Save augmented results to output/
+  1. Train linear probes on datasets/contrastive_dataset.json (one per layer)
+  2. Evaluate probes on WMDP dataset to find the best layer (via AUROC)
+  3. Run datasets/sensitivity_dataset.json through the model with the best probe
+  4. Save augmented results to output/
 
 Usage:
-    # Test mode (Llama 1B, best available device)
+    # Test mode — all layers, WMDP evaluation (Llama 1B)
     python run.py --test-mode
 
     # Full run (Llama 70B)
     python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda
 
-    # Custom layer
-    python run.py --test-mode --layer 8
+    # Specific layers only
+    python run.py --test-mode --layers 4,8,12
 
-    # Skip probe training (load saved probe)
-    python run.py --test-mode --load-probe output/probe.pt
+    # Single layer (skips WMDP automatically)
+    python run.py --test-mode --layers 8
+
+    # Load saved probes
+    python run.py --test-mode --load-probe output/probes.pt
 """
+# ruff: noqa: E741
 import argparse
 import json
 import os
@@ -28,7 +33,7 @@ from datetime import datetime
 import torch
 
 from src.model import load_model, generate_text, get_device
-from src.probe import train_probe, get_projection, get_verdict, save_probe, load_probe
+from src.probe import train_probes, evaluate_probes, get_projection, get_verdict, save_probes, load_probes
 
 
 CONTRASTIVE_DATASET = "datasets/contrastive_dataset.json"
@@ -101,7 +106,8 @@ def main():
     )
     parser.add_argument("--device", default=None, help="Device (cuda/mps/cpu)")
     parser.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
-    parser.add_argument("--layer", type=int, default=None, help="Layer for probe (default: middle)")
+    parser.add_argument("--layers", type=str, default=None,
+                        help="Comma-separated layer indices (default: all layers). Single layer skips WMDP.")
     parser.add_argument("--load-probe", default=None, help="Path to saved probe .pt file (skip training)")
     parser.add_argument("--max-new-tokens", type=int, default=200)
     parser.add_argument("--output", default=None, help="Output JSON filename (default: timestamped)")
@@ -123,20 +129,32 @@ def main():
     # Load model
     model, tokenizer = load_model(model_name, device=device, dtype=dtype)
 
-    # Determine probe layer
-    layer = args.layer if args.layer is not None else model.cfg.n_layers // 2
-    print(f"Using probe layer: {layer}")
+    # Resolve which layers to train
+    if args.layers:
+        layers = [int(l.strip()) for l in args.layers.split(",")]
+    else:
+        layers = list(range(model.cfg.n_layers))
 
-    # Train or load probe
+    # Train or load probes
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     if args.load_probe:
-        print(f"Loading probe from {args.load_probe}")
-        probe = load_probe(args.load_probe)
+        probes = load_probes(args.load_probe)
     else:
         contrastive = load_contrastive_dataset(CONTRASTIVE_DATASET, tokenizer)
-        probe = train_probe(model, contrastive, layer=layer)
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        probe_path = os.path.join(OUTPUT_DIR, "probe.pt")
-        save_probe(probe, probe_path)
+        probes = train_probes(model, contrastive, layers)
+        save_probes(probes, os.path.join(OUTPUT_DIR, "probes.pt"))
+
+    # Select best probe
+    if len(probes) == 1:
+        best_layer = next(iter(probes))
+        probe = probes[best_layer]
+    else:
+        from src.wmdp import load_wmdp
+        test_data, deploy_data = load_wmdp()
+        eval_results = evaluate_probes(model, probes, test_data + deploy_data)
+        best_layer = eval_results["best_layer"]
+        probe = probes[best_layer]
+        probe["threshold"] = eval_results[best_layer]["threshold"]
 
     # Run sensitivity dataset
     sensitivity = load_sensitivity_dataset(SENSITIVITY_DATASET)
