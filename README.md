@@ -5,7 +5,7 @@ Experiment setup for the thesis *"Sensitivity Analysis of Evaluation Awareness i
 ## What it does
 
 1. Trains one linear probe for each layer of the model on a contrastive dataset of evaluation-aware vs. non-aware model responses.
-2. Analyzes which probe is best based on how well it distinguishes between WMDP questions vs. WMDP questions + a deploy prompt.
+2. Evaluates each probe on the Needham et al. dataset (chat-only transcripts) to find the best layer via AUROC — how well does the probe separate evaluation conversations from organic ones?
 3. Runs a sensitivity dataset through the model and scores each prompt using the winning probe.
 4. Saves augmented results to `output/` — including generated text, probe projection score, and binary verdict.
 
@@ -19,33 +19,54 @@ Experiment setup for the thesis *"Sensitivity Analysis of Evaluation Awareness i
 
 `src/probe.py` mirrors the implementation from that repository.
 
+Probe evaluation uses the [Needham et al. dataset](https://huggingface.co/datasets/jjpn2/eval_awareness) ("Large Language Models Often Know They Are Being Evaluated", Needham et al.) — not included in this repo, see setup below.
+
 ## Setup
 
+Requires Python 3.11. Create a virtual environment with your preferred tool and install dependencies:
+
 ```bash
-conda create -n ea-probing python=3.11
-conda activate ea-probing
 pip install -r requirements.txt
 ```
 
-> Requires CUDA for 70B inference. The 1B model (`--test-mode`) runs on CPU.
+### Needham et al. Dataset (required for multi-layer probe selection)
+
+The Needham et al. dataset is not included in this repo. To obtain it:
+
+```bash
+# From the parent directory of this repo:
+git clone https://huggingface.co/datasets/jjpn2/eval_awareness ../eval_awareness
+cd ../eval_awareness
+bash scripts/decrypt.sh
+cd -
+```
+
+This places `dataset.json` at `../eval_awareness/dataset.json`, which is the default path.
+
+To use a custom path: `--eval-dataset /path/to/dataset.json`
+
+> Requires CUDA for 70B inference. The 1B model (`--test-mode`) runs on CPU/MPS.
 
 ## Usage
 
 ```bash
-# All layers (default) — trains probes on all layers, evaluates on WMDP to find best
+# All layers (default) — trains probes on all layers, evaluates on Needham et al. dataset to find best
 python run.py --test-mode
 
-# Specific layers only — evaluates on WMDP to pick best among specified layers
+# Specific layers only — evaluates on Needham et al. dataset to pick best among specified layers
 python run.py --test-mode --layers 4,8,12
 
-# Single layer (skips WMDP automatically)
+# Single layer (skips Needham et al. evaluation automatically)
 python run.py --test-mode --layers 8
 
 # Full run with Llama 70B
 python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda
 
-# Skip probe retraining (auto-detects single vs multi-layer .pt format)
+# Skip probe retraining
 python run.py --test-mode --load-probe output/probes.pt
+
+# Custom eval dataset path
+python run.py --test-mode --eval-dataset /path/to/dataset.json
 ```
 
 ## File Layout
@@ -55,7 +76,7 @@ run.py                          # Main orchestration script
 src/
   model.py                      # Model loading + generation (HookedTransformer)
   probe.py                      # Probe training and inference
-  wmdp.py                       # Load WMDP dataset for probe analysis
+  needham.py                    # Load Needham et al. dataset for probe selection
 datasets/
   contrastive_dataset.json      # Training data (from evaluation-awareness-probing)
   sensitivity_dataset.json      # Evaluation prompts

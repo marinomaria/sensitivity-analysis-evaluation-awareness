@@ -4,21 +4,21 @@ Main entry point for the exp-setup experiment.
 
 Steps:
   1. Train linear probes on datasets/contrastive_dataset.json (one per layer)
-  2. Evaluate probes on WMDP dataset to find the best layer (via AUROC)
+  2. Evaluate probes on the Needham et al. dataset to find the best layer (via AUROC)
   3. Run datasets/sensitivity_dataset.json through the model with the best probe
   4. Save augmented results to output/
 
 Usage:
-    # Test mode — all layers, WMDP evaluation (Llama 1B)
+    # Test mode — all layers, Needham et al. probe evaluation (Llama 1B)
     python run.py --test-mode
 
     # Full run (Llama 70B)
     python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda
 
-    # Specific layers only
+    # Specific layers only — evaluates on Needham et al. dataset to pick best
     python run.py --test-mode --layers 4,8,12
 
-    # Single layer (skips WMDP automatically)
+    # Single layer (skips Needham et al. evaluation automatically)
     python run.py --test-mode --layers 8
 
     # Load saved probes
@@ -29,6 +29,7 @@ import argparse
 import json
 import os
 from datetime import datetime
+from pathlib import Path
 
 import torch
 
@@ -39,6 +40,10 @@ from src.probe import train_probes, evaluate_probes, get_projection, get_verdict
 CONTRASTIVE_DATASET = "datasets/contrastive_dataset.json"
 SENSITIVITY_DATASET = "datasets/sensitivity_dataset.json"
 OUTPUT_DIR = "output"
+
+DEFAULT_EVAL_DATASET = str(
+    Path(__file__).parent.parent / "eval_awareness" / "dataset.json"
+)
 
 
 def load_contrastive_dataset(path, tokenizer):
@@ -106,11 +111,20 @@ def main():
     )
     parser.add_argument("--device", default=None, help="Device (cuda/mps/cpu)")
     parser.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
-    parser.add_argument("--layers", type=str, default=None,
-                        help="Comma-separated layer indices (default: all layers). Single layer skips WMDP.")
+    parser.add_argument(
+        "--layers",
+        type=str,
+        default=None,
+        help="Comma-separated layer indices (default: all layers). Single layer skips Needham et al. evaluation.",
+    )
     parser.add_argument("--load-probe", default=None, help="Path to saved probe .pt file (skip training)")
     parser.add_argument("--max-new-tokens", type=int, default=200)
     parser.add_argument("--output", default=None, help="Output JSON filename (default: timestamped)")
+    parser.add_argument(
+        "--eval-dataset",
+        default=DEFAULT_EVAL_DATASET,
+        help=f"Path to Needham et al. dataset.json (default: {DEFAULT_EVAL_DATASET})",
+    )
     args = parser.parse_args()
 
     # Model selection
@@ -149,9 +163,9 @@ def main():
         best_layer = next(iter(probes))
         probe = probes[best_layer]
     else:
-        from src.wmdp import load_wmdp
-        test_data, deploy_data = load_wmdp()
-        eval_results = evaluate_probes(model, probes, test_data + deploy_data)
+        from src.needham import load_needham_dataset  # Needham et al. (2025)
+        needham_data = load_needham_dataset(args.eval_dataset, tokenizer)
+        eval_results = evaluate_probes(model, probes, needham_data)
         best_layer = eval_results["best_layer"]
         probe = probes[best_layer]
         probe["threshold"] = eval_results[best_layer]["threshold"]
@@ -161,7 +175,6 @@ def main():
     results = run_sensitivity(model, tokenizer, probe, sensitivity, args.max_new_tokens)
 
     # Save output
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
     if args.output:
         out_path = os.path.join(OUTPUT_DIR, args.output)
     else:
