@@ -23,6 +23,15 @@ Usage:
 
     # Load saved probes
     python run.py --test-mode --load-probe output/probes.pt
+
+    # Test mode with Qwen (0.5B)
+    python run.py --test-mode --model qwen-0.5b
+
+    # Full run with Qwen 7B
+    python run.py --model qwen-7b --device cuda
+
+    # Full run with DeepSeek-R1-Distill 7B (Qwen base)
+    python run.py --model deepseek-r1-7b --device cuda
 """
 # ruff: noqa: E741
 import argparse
@@ -33,8 +42,9 @@ from pathlib import Path
 
 import torch
 
-from src.model import load_model, generate_text, get_device
+from src.model import load_model, generate_text, get_device, apply_chat_template_with_fallback
 from src.probe import train_probes, evaluate_probes, get_projection, get_verdict, save_probes, load_probes
+
 
 
 CONTRASTIVE_DATASET = "datasets/contrastive_dataset.json"
@@ -63,9 +73,7 @@ def load_contrastive_dataset(path, tokenizer):
             },
             {"role": "user", "content": f"{entry['question']}\n\nAnswer:"},
         ]
-        formatted = tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        formatted = apply_chat_template_with_fallback(tokenizer, messages)
         dataset.append(
             {
                 "question": formatted,
@@ -107,7 +115,10 @@ def main():
     parser.add_argument(
         "--test-mode",
         action="store_true",
-        help="Use Llama-3.2-1B-Instruct (fast local testing)",
+        help=(
+            "Use a small local model for fast testing "
+            "(default: Llama-3.2-1B-Instruct; override with --model, e.g. --model qwen-0.5b)"
+        ),
     )
     parser.add_argument("--device", default=None, help="Device (cuda/mps/cpu)")
     parser.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])

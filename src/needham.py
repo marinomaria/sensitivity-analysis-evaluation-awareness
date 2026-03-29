@@ -10,6 +10,8 @@ See README for setup instructions.
 import json
 from pathlib import Path
 
+from src.model import apply_chat_template_with_fallback
+
 
 SUPPORTED_ROLES = {"system", "user", "assistant"}
 
@@ -69,9 +71,7 @@ def load_needham_dataset(dataset_path: str, tokenizer) -> list[dict]:
             n_skipped += 1
             continue
 
-        prompt = tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        prompt = apply_chat_template_with_fallback(tokenizer, messages)
 
         # Skip entries that exceed the model's context window
         token_ids = tokenizer.encode(prompt)
