@@ -130,6 +130,12 @@ def main():
     )
     parser.add_argument("--load-probe", default=None, help="Path to saved probe .pt file (skip training)")
     parser.add_argument("--max-new-tokens", type=int, default=200)
+    parser.add_argument(
+        "--sensitivity-limit",
+        type=int,
+        default=None,
+        help="Use only the first N records from the sensitivity dataset",
+    )
     parser.add_argument("--output", default=None, help="Output JSON filename (default: timestamped)")
     parser.add_argument(
         "--eval-dataset",
@@ -183,6 +189,11 @@ def main():
 
     # Run sensitivity dataset
     sensitivity = load_sensitivity_dataset(SENSITIVITY_DATASET)
+    if args.sensitivity_limit is not None:
+        if args.sensitivity_limit < 0:
+            parser.error("--sensitivity-limit must be >= 0")
+        sensitivity = sensitivity[:args.sensitivity_limit]
+        print(f"Using {len(sensitivity)} sensitivity records (--sensitivity-limit={args.sensitivity_limit})")
     results = run_sensitivity(model, tokenizer, probe, sensitivity, args.max_new_tokens)
 
     # Save output
