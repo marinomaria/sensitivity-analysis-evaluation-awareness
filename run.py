@@ -12,8 +12,8 @@ Usage:
     # Test mode — all layers, Needham et al. probe evaluation (Llama 1B)
     python run.py --test-mode
 
-    # Full run (Llama 70B)
-    python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda
+    # Full run (Llama 70B, requires 2x 80GB GPUs)
+    python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda --n-gpus 2
 
     # Specific layers only — evaluates on Needham et al. dataset to pick best
     python run.py --test-mode --layers 4,8,12
@@ -121,6 +121,7 @@ def main():
         ),
     )
     parser.add_argument("--device", default=None, help="Device (cuda/mps/cpu)")
+    parser.add_argument("--n-gpus", type=int, default=1, help="Number of GPUs to distribute model across (default: 1)")
     parser.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
     parser.add_argument(
         "--layers",
@@ -158,7 +159,7 @@ def main():
     dtype = dtype_map[args.dtype]
 
     # Load model
-    model, tokenizer = load_model(model_name, device=device, dtype=dtype)
+    model, tokenizer = load_model(model_name, device=device, dtype=dtype, n_devices=args.n_gpus)
 
     # Resolve which layers to train
     if args.layers:

@@ -16,6 +16,7 @@ LOG_FILE="runpod_llama70b_50_$(date +%Y%m%d_%H%M%S).log"
 python run.py \
   --model meta-llama/Llama-3.3-70B-Instruct \
   --device cuda \
+  --n-gpus 2 \
   --max-new-tokens 96 \
   --sensitivity-limit 50 | tee "${LOG_FILE}"
 

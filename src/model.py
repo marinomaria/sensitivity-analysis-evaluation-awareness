@@ -85,7 +85,7 @@ def get_device(requested=None):
     return "cpu"
 
 
-def load_model(model_name, device=None, dtype=torch.bfloat16):
+def load_model(model_name, device=None, dtype=torch.bfloat16, n_devices=1):
     """
     Load a HookedTransformer model and its tokenizer.
 
@@ -93,6 +93,7 @@ def load_model(model_name, device=None, dtype=torch.bfloat16):
         model_name: HuggingFace model ID or alias (see MODEL_ALIASES)
         device: Target device (defaults to best available)
         dtype: torch dtype
+        n_devices: Number of GPUs to distribute the model across (default: 1)
 
     Returns:
         tuple: (model, tokenizer)
@@ -100,20 +101,23 @@ def load_model(model_name, device=None, dtype=torch.bfloat16):
     model_name = resolve_model_name(model_name)
     device = get_device(device)
 
-    print(f"Loading model '{model_name}' on {device} ({dtype})...")
+    print(f"Loading model '{model_name}' on {device} ({dtype}), n_devices={n_devices}...")
     tl_name = _TL_ARCHITECTURE_MAP.get(model_name)
     if tl_name:
-        # Model not in TransformerLens whitelist — load HF weights and map via base architecture
         hf_model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype)
-        model = HookedTransformer.from_pretrained(tl_name, hf_model=hf_model, device=device, dtype=dtype)
+        model = HookedTransformer.from_pretrained(
+            tl_name, hf_model=hf_model, device=device, dtype=dtype, n_devices=n_devices,
+        )
         del hf_model
     else:
-        model = HookedTransformer.from_pretrained(model_name, device=device, dtype=dtype)
+        model = HookedTransformer.from_pretrained(
+            model_name, device=device, dtype=dtype, n_devices=n_devices,
+        )
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
     model.eval()
 
-    print(f"Model loaded: {model.cfg.n_layers} layers, d_model={model.cfg.d_model}")
+    print(f"Model loaded: {model.cfg.n_layers} layers, d_model={model.cfg.d_model}, n_devices={n_devices}")
     return model, tokenizer
 
 

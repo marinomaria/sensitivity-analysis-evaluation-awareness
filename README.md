@@ -59,11 +59,11 @@ python run.py --test-mode --layers 4,8,12
 # Single layer (skips Needham et al. evaluation automatically)
 python run.py --test-mode --layers 8
 
-# Full run with Llama 70B
-python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda
+# Full run with Llama 70B (requires 2x 80GB GPUs)
+python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda --n-gpus 2
 
 # Full run with Llama 70B using only first 50 sensitivity records
-python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda --sensitivity-limit 50
+python run.py --model meta-llama/Llama-3.3-70B-Instruct --device cuda --n-gpus 2 --sensitivity-limit 50
 
 # Skip probe retraining
 python run.py --test-mode --load-probe output/probes.pt
