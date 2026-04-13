@@ -77,3 +77,4 @@ wadler_lindig==0.1.7
 wandb==0.25.1
 yarl==1.23.0
 pytest==8.3.5
+hf_transfer==0.1.9
