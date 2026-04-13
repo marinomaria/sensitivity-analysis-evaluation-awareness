@@ -21,7 +21,7 @@ Experiment setup for the thesis *"Sensitivity Analysis of Evaluation Awareness i
 
 Probe evaluation uses the [Needham et al. dataset](https://huggingface.co/datasets/jjpn2/eval_awareness) ("Large Language Models Often Know They Are Being Evaluated", Needham et al.) — not included in this repo, see setup below.
 
-## Setup
+## Local Setup
 
 Requires Python 3.11. Create a virtual environment with your preferred tool and install dependencies:
 
@@ -37,6 +37,7 @@ The Needham et al. dataset is not included in this repo. To obtain it:
 # From the parent directory of this repo:
 git clone https://huggingface.co/datasets/jjpn2/eval_awareness ../eval_awareness
 cd ../eval_awareness
+git lfs pull
 bash scripts/decrypt.sh
 cd -
 ```
@@ -44,8 +45,6 @@ cd -
 This places `dataset.json` at `../eval_awareness/dataset.json`, which is the default path.
 
 To use a custom path: `--eval-dataset /path/to/dataset.json`
-
-> Requires CUDA for 70B inference. The 1B model (`--test-mode`) runs on CPU/MPS.
 
 ## Usage
 
@@ -72,6 +71,28 @@ python run.py --test-mode --load-probe output/probes.pt
 python run.py --test-mode --eval-dataset /path/to/dataset.json
 ```
 
+The 1B model (`--test-mode`) runs on CPU/MPS. 70B requires CUDA with 2x 80GB GPUs (`--n-gpus 2`).
+
+## Cloud Run (RunPod)
+
+For running 70B models that don't fit on local hardware.
+
+Quick version (on a 2x A100 80GB RunPod pod):
+
+```bash
+cd /workspace
+git clone <your_repo_url> exp-setup
+bash exp-setup/scripts/runpod_setup_env.sh       # install deps, auth, dataset
+cd exp-setup
+bash scripts/runpod_run_llama70b_50.sh            # run experiment
+```
+
+Then from your local machine:
+
+```bash
+bash scripts/download_runpod_artifacts.sh <IP> <PORT>
+```
+
 ## File Layout
 
 ```
@@ -83,6 +104,12 @@ src/
 datasets/
   contrastive_dataset.json      # Training data (from evaluation-awareness-probing)
   sensitivity_dataset.json      # Evaluation prompts
+scripts/
+  runpod_setup_env.sh           # Pod environment setup (deps, auth, dataset)
+  runpod_run_llama70b_50.sh     # Run experiment on pod
+  download_runpod_artifacts.sh  # Download results to local machine
+docs/
+  cloud-llama70b-budgeted-run.md  # Full RunPod guide with troubleshooting
 output/
   probes.pt                     # Saved probe weights (one per layer)
 ```
