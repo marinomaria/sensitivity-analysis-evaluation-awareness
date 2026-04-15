@@ -16,6 +16,18 @@ from src.model import apply_chat_template_with_fallback
 SUPPORTED_ROLES = {"system", "user", "assistant"}
 
 
+def _normalize_content(content):
+    """Flatten OpenAI multi-part content (list of dicts) into a plain string."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "".join(
+            part if isinstance(part, str) else part.get("text", "")
+            for part in content
+        )
+    return str(content)
+
+
 def load_needham_dataset(dataset_path: str, tokenizer) -> list[dict]:
     """
     Load the Needham et al. dataset, filter to chat-only transcripts,
@@ -62,7 +74,7 @@ def load_needham_dataset(dataset_path: str, tokenizer) -> list[dict]:
     for entry in chat_entries:
         # Strip unsupported roles (e.g. tool)
         messages = [
-            {"role": m["role"], "content": m["content"]}
+            {"role": m["role"], "content": _normalize_content(m["content"])}
             for m in entry["input"]
             if m["role"] in SUPPORTED_ROLES and m.get("content") is not None
         ]
