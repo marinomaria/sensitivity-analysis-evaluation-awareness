@@ -112,6 +112,7 @@ def run_sensitivity(model, tokenizer, probe, sensitivity_dataset, max_new_tokens
 def main():
     parser = argparse.ArgumentParser(description="Sensitivity analysis experiment")
     parser.add_argument("--model", default=None, help="HuggingFace model ID or alias")
+    parser.add_argument("--model-path", default=None, help="Local directory with model files (skips HF download)")
     parser.add_argument(
         "--test-mode",
         action="store_true",
@@ -159,7 +160,7 @@ def main():
     dtype = dtype_map[args.dtype]
 
     # Load model
-    model, tokenizer = load_model(model_name, device=device, dtype=dtype, n_devices=args.n_gpus)
+    model, tokenizer = load_model(model_name, device=device, dtype=dtype, n_devices=args.n_gpus, model_path=args.model_path)
 
     # Resolve which layers to train
     if args.layers:

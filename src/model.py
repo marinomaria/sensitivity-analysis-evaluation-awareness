@@ -85,7 +85,7 @@ def get_device(requested=None):
     return "cpu"
 
 
-def load_model(model_name, device=None, dtype=torch.bfloat16, n_devices=1):
+def load_model(model_name, device=None, dtype=torch.bfloat16, n_devices=1, model_path=None):
     """
     Load a HookedTransformer model and its tokenizer.
 
@@ -94,26 +94,36 @@ def load_model(model_name, device=None, dtype=torch.bfloat16, n_devices=1):
         device: Target device (defaults to best available)
         dtype: torch dtype
         n_devices: Number of GPUs to distribute the model across (default: 1)
+        model_path: Optional local directory containing model files. When set,
+                     weights and tokenizer are loaded from this path instead of
+                     downloading from HuggingFace.
 
     Returns:
         tuple: (model, tokenizer)
     """
     model_name = resolve_model_name(model_name)
     device = get_device(device)
+    load_from = model_path or model_name
 
     print(f"Loading model '{model_name}' on {device} ({dtype}), n_devices={n_devices}...")
+    if model_path:
+        print(f"  Using local weights from: {model_path}")
+
     tl_name = _TL_ARCHITECTURE_MAP.get(model_name)
-    if tl_name:
-        hf_model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype)
+    needs_explicit_hf_model = tl_name or model_path
+
+    if needs_explicit_hf_model:
+        hf_model = AutoModelForCausalLM.from_pretrained(load_from, torch_dtype=dtype)
         model = HookedTransformer.from_pretrained(
-            tl_name, hf_model=hf_model, device=device, dtype=dtype, n_devices=n_devices,
+            tl_name or model_name,
+            hf_model=hf_model, device=device, dtype=dtype, n_devices=n_devices,
         )
         del hf_model
     else:
         model = HookedTransformer.from_pretrained(
             model_name, device=device, dtype=dtype, n_devices=n_devices,
         )
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(load_from)
     tokenizer.pad_token = tokenizer.eos_token
     model.eval()
 
