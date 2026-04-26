@@ -25,29 +25,6 @@ def _extract_last_token_activation(model, tokens, layer):
     return cached["act"]
 
 
-def _extract_activations_all_layers(model, tokens, token_type, layers, tokenizer):
-    """Extract residual stream activations at the last occurrence of token_type for multiple layers."""
-    cached = {}
-    token_id = tokenizer.convert_tokens_to_ids(token_type)
-
-    def make_hook(layer):
-        def hook_fn(activation, hook):
-            positions = (tokens == token_id).nonzero()
-            if positions.numel() == 0:
-                raise ValueError(f"Token '{token_type}' not found in input tokens")
-            last_pos = positions[-1, -1]
-            cached[layer] = activation[:, last_pos, :].clone().detach()
-            return activation
-        return hook_fn
-
-    model.reset_hooks()
-    hooks = [(f"blocks.{layer}.hook_resid_pre", make_hook(layer)) for layer in layers]
-    with model.hooks(fwd_hooks=hooks):
-        with torch.no_grad():
-            model(tokens)
-
-    return cached
-
 
 def _extract_last_token_activations_all_layers(model, tokens, layers):
     """Extract residual stream activations at the last token position for multiple layers."""
@@ -78,35 +55,33 @@ def train_probes(model, contrastive_dataset, layers):
     """
     Train one linear probe per layer.
 
+    Each item in contrastive_dataset must have:
+      - 'positive_prompt': full prompt string for the positive (eval-context) class
+      - 'negative_prompt': full prompt string for the negative (deployment-context) class
+
+    Activations are extracted at the last token of each prompt — the same position
+    used by evaluate_probes and get_projection — eliminating the train/eval
+    extraction-position mismatch that existed when training extracted at the
+    answer-letter token of an appended "(A)"/"(B)" suffix.
+
     Args:
         model: HookedTransformer model
-        contrastive_dataset: List of dicts with 'question', 'positive', 'negative'
+        contrastive_dataset: List of dicts with 'positive_prompt', 'negative_prompt'
         layers: List of layer indices
 
     Returns:
         dict mapping layer index to probe dict (vector, raw_vector, threshold, layer)
     """
-    tokenizer = model.tokenizer
     pos_acts_by_layer = {l: [] for l in layers}
     neg_acts_by_layer = {l: [] for l in layers}
 
     print(f"Training probes on {len(layers)} layers with {len(contrastive_dataset)} examples...")
     for item in tqdm(contrastive_dataset, desc="Extracting activations"):
-        question = item["question"]
-        positive = item["positive"]
-        negative = item["negative"]
+        pos_tokens = model.to_tokens(item["positive_prompt"])
+        neg_tokens = model.to_tokens(item["negative_prompt"])
 
-        pos_token_type = positive[1]  # e.g. "(A)"[1] -> "A" (the answer letter for token lookup)
-        neg_token_type = negative[1]
-
-        pos_prompt = f"{question}\n\n {positive}"
-        neg_prompt = f"{question}\n\n {negative}"
-
-        pos_tokens = model.to_tokens(pos_prompt)
-        neg_tokens = model.to_tokens(neg_prompt)
-
-        pos_acts = _extract_activations_all_layers(model, pos_tokens, pos_token_type, layers, tokenizer)
-        neg_acts = _extract_activations_all_layers(model, neg_tokens, neg_token_type, layers, tokenizer)
+        pos_acts = _extract_last_token_activations_all_layers(model, pos_tokens, layers)
+        neg_acts = _extract_last_token_activations_all_layers(model, neg_tokens, layers)
 
         for l in layers:
             pos_acts_by_layer[l].append(pos_acts[l])
