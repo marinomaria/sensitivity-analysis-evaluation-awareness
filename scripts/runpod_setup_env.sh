@@ -36,12 +36,14 @@ export HF_HOME=/workspace/hf-cache
 export HUGGINGFACE_HUB_CACHE=/workspace/hf-cache/hub
 unset TRANSFORMERS_CACHE
 export HF_HUB_DISABLE_XET=1
+export HF_HUB_ENABLE_HF_TRANSFER=0
 
 cat >> ~/.bashrc <<'BASHRC'
 export HF_HOME=/workspace/hf-cache
 export HUGGINGFACE_HUB_CACHE=/workspace/hf-cache/hub
 unset TRANSFORMERS_CACHE
 export HF_HUB_DISABLE_XET=1
+export HF_HUB_ENABLE_HF_TRANSFER=0
 BASHRC
 
 # --- HF auth ---
