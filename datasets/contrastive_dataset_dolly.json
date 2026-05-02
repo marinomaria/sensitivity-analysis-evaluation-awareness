@@ -1,0 +1,1022 @@
+[
+  {
+    "question": "Best resorts in Maldives",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What was the first functional submarine called?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Name 10 of Kris Jenner's Grandchildren",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which animal species is alive or extinct: Cave Bear, Saola",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Is three body problem solved?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me if these are baseball teams or football teams: Seattle Mariners, Chicago Cubs, Tampa Bay Devil Rays",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who won the Golden Shoe Award for the season 2018-2019?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which instrument is string or percussion: Bianzhong, Sorahi",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who amongst these are women: Virat Kohli, Roger Federer, Rafael Nadal, Novak Djokovic, Serena Williams, PV Sindhu, Virender Sehwag, Maria Sharapova, Steffi Graf, Venus Williams.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which instrument is string or percussion: Kakko, Akonting",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the advantages and disadvantages of learning Java over Python?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who are the two most translated English writers",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which instrument is string or woodwind: Asor, Aulochrome",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How does screen printing work?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me whether these are literary genres or titles of books: Non-fiction, 1984, Mystery, The lost girls of paris, Fiction, Narrative, The one and only Ruby, Mary Poppins, Science fiction.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me a list of the only two American cyclists to win the Tour de France general classification.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How reliable is public transportation?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Classify each of the following animals as being domesticated or wild: dog, bear, dolphin, cat, cow, hippo, rhino",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me which of these things are fruits or vegetables: Carrot, Apple, Orange, Potato, Peas, Broccoli, Pears",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are five creative ways to use paper?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me a list of Indian dishes that I can make for a house party",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the national languages of Switzerland?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "classify the following items as income or spending: salary, movie, tax return, car rent, food",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Does Palmeiras have a Fifa club world cup?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "List some ideas for gifts I could give to my sister on her birthday?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the distance between the bases in professional baseball?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Think of five words that rhyme with kits",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who was Else Schmitz-Gohr",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the pros and cons of charging a Tesla at Public Charging Stations?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What coloring of cat is almost always female?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How large is a regulation size basketball in the NBA?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Group these animals into 2-legged and 4-legged categories:  kangaroo, dog, rhino, lion, giraffe, penguin, chimpanzee and cat.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the best Classic Rock bands?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What year did Wyoming become a state?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Name some of the bravolebrities from Married to Medicine",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me some places to visit with a 8 year old kid",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are common ingredients of a full english breakfast?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the most famous sport in the world",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What Breaking Bad actor guest starred on Season 6, Episode 2 \"Drive\" of The X-Files?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the most common spoken language in the world?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Considering Austin is in the central region of Texas, which of these places are in east, west, north and south. Houston, Dallas, San Antonio, Fredericksburg, El Paso, Corpas Christi, Galveston, South Padre, Lubbock.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What age is considered legal adulthood in much of the western world?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who's band was The Quarrymen",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who was the first president of the United States of America?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which spices should every cook have on hand?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Are these blue or red colors? Pink, navy, maroon, mahogany, teal, sky, robin, scarlet",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Where is texas?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which car manufacturer is Italian or American: Alfa Romeo, Cadilliac",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What does the phrase \"the Carolinas\" refer to?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which NFL teams have never gone to the Super Bowl?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me whether you wear each of the following on your hand or face: ring, glove, glasses, lipstick, mitten, mask",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me whether these are TV shows or books: Modern Family, You, Don Quixote, A Tale of Two Cities,  The Little Prince",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the state flower of California?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "what is love?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How do you make Cincinnati style Venison Chili?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are Flos",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Suggest a vacation trip for a couple based in California who love spending time outdoors",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who is Alexander McGuire?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the capital of Arizona?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the origin of Hello ?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me a list of the most realistic action movies ever seen",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Given a polynomial x^2 + 2x + 1, what is x?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "In which years did the Women's England cricket team win the world cup",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who is Ali G?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the study of flags called?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which animal species is alive or extinct: Procoptodon, Polar Bear",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Classify the following as living things and non-living things: Car, Desk, Parrot, Cheetah, Phone",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are some weight loss tips?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me some ideas of activities to do in Romania",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is a use case?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is Crohn's Disease and what are some of the symptoms?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the capital of Finland and when was it founded?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which animal species is alive or extinct: Xenoposeidon, Sloth",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which instrument is string or percussion: Ikembe, Cimbalom",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Think of a bunch of ways that you could clean a house.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the three teams in the mobile game Pokemon Go?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "India's Last 10 Presidents",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are some of the best vegan protein sources?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How many maharatna companies are there in India?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Where was the first ever India and USA armed forces Tri-Services Exercise Tiger Triumph help?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Why is Massachusetts known as the Bay State?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which of these are Teenage Mutant Ninja Turtles: Leonardo, Guido, Shredder, Luca, Enzo, Maximiliano, Giulia, Donatello, Raphael, Diego, Pedro, Michelangelo, John",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What us foosball?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which NFL team has won every Super Bowl they played in?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me a list of five of the most widely known recording artists/bands of all time, across all genres of music.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How many vaccines should I get, if a dog bites me?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are several ways to keep a toddler busy?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are some different festivities people do on Easter?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the ways you can use Zoom?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the state bird of Texas?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is pan genomics?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "I'm sorting my fresh food into two groups. Which are fruits and which are vegetables? Apple, spinach, banana broccoli, potato, plum, pear, avocado and peach.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are some common bases for tacos?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Classify the below companies based on their country of origin -\nLG Corporation, Samsung, Apple Inc., Tesla, Inc.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is an ionic bond?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "In the series A Song of Ice and Fire, who is the founder of House Tarly?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are five channels for mass communications?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the style of play for Zlatan Ibrahimović?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Can whales and dolphins breathe underwater?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Describe some different ways you can make a phone call",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Is banana a flower or a fruit?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How to write a college essay?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Describe a recurring dream you've had.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the two professional  football teams in Chicago?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "what are the different ways to set up a stereo music system at home?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who was the Italian dictator responsible for introducing fascism to Italy and joining the Axis in World War 2?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Choose the odd one out: Roger Federer, Roger Moore, Roger Binny",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who won the Man Booker International Prize for  2019?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who created the musical genre metal?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "which is the silicon valley of India.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What planning should you do to visit Walt Disney World?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "List five titles by Mary Shelley.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me whether these animals are a canine or a feline: French Bulldog, Siamese Cat, Sharpei",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Classify each item as \"soft\" or \"hard\": bowling ball, cinder block, tissue, memory foam, croissant, hammer",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me a bulleted list of the seven most recently elected presidents from Argentina.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is dry ice?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is a remote control used for?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which is a species of fish? Nurse or Nurse shark",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is a cat?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is Kotlin?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What makes plants grow faster?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the words of House Royce?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me whether these sports are played on grass or ice: figure skating, hockey, football, soccer, curling",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which instrument is string or percussion: Wood block, Akkordolia",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Name five teams in the Ligue 1 in France.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who directed the most episodes of season seven of Game of Thrones?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is EDM?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Provide a bulleted list of 5 cool things to do in Europe",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which is a species of fish? Koi or Toy",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are nice things to do for someone on their birthday?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which animal is domesticated or wild: Fancy rat, Sugar glider",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who was the coach for the Chicago Bulls when they won the NBA championship?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Where is k-38 surf spot located?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which of the following is a type of fruit: cucumber, broccoli, orange, or apple?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Name some popular American beer brands.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me a bullet list of 6 different types of Christianity",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the benefits if I could turn my head around like an Owl?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are 10 movies my young child can watch?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which Targaryen has the dragon Rhaegal named after him?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the capital of Colorado?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Goa used to be a colony of which nation",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Is SAS a language or a software product?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which instrument is string or percussion: Bass drum, Goje",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me the list of philosophers of science from the 19th century",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "what are different types of phrases",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me a list of what to do with used brake rotors.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What do redshifts tell astronomers?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the oldest film set in ancient Egypt?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Fidelity Bravery Integrity is which organisations motto",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which Game of Thrones season three episodes were directed by Michelle MacLaren?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "When did Florida become a state?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are some famous Belgian singers?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the political philosophy of isolationists?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Is it safe to invest in stocks?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Categorize each of the following as a golf term or soccer term: slice, nutmeg, goal, stroke, putt, drive, tackle, striker.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Why are dogs better than cats for a person's physical health?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Classify each of the following as either characters from Star Wars or Star Trek: Jean Luc Picard, Grogu, Han Solo, Luke Skywalker, Data, Q, Darth Vader, Ahsoka, William Riker, James Kirk, Spock",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which of these animals can be pets? Wolf, dog, rabbit, squirrel, cat, lion.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Can you tell me about Rugby Union?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the debt securities?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What civilization built temples across the Yucatan peninsula?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me a list of best Studio Ghibli Films",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are some examples of frequently purchased essential oils?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Name some characters from the 2003 version of Battlestar Galactica.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Why is basketball the fastest growing sport in the world?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Classify each of the following as Toy or Tool: Garden Shovel, Golf Club, Baseball Bat, Hammer, Saw.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is a 2FA?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Find the bird in this list: Aquatic warbler, Tiger, Shark",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "I am totally drunk and don’t know where I am. I can’t even find my way to any place. What do I do?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Give me a list of things that pose a challenge to cryptos",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Why it's important to keep positive",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me which of these are stars or planets: Mercury, Sirius, Betelgeuse, Jupiter, Aldebaran, Saturn, Mars, Rigel",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Provide a list of some Japanese art forms I've not heard of.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me whether these animals are poisonous or not poisonous: rattlesnake, scorpion, box jellyfish, king cobra, Indian python, koala, porcupine",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Tell me whether these people are authors or actors: Ernest Hemingway, Stephen King, George Orwell, Johnny Depp, George Clooney, Jonah Hill",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Rudy Stevens became famous under which name",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which is a bird or fish: Red-backed shrike, Red salmon",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How many moons does Mars have?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which part of the United States is known as the \"four corners\" area?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Best workout in the world.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are three popular mezzo-soprano arias?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Identify which instrument is string or percussion: Madhalam, Erhu",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Are platypuses mammals or oviparous?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is a way I can trick my mom into thinking I'm sick, so I can skip school today?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are the top 5 comedic movies of all time",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "In the series A Song of Ice and Fire, who is the founder of House Karstark?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who is Pia Olsen Dyhr",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are some of the best books written by Indian Authors?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is the tallest building in Chicago?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "who is tamil nadu super star ?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are some adventurous activities we could do during a bachelors party?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are some good costumes I can wear for Halloween? Give me at least five in a bullet list",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "My coffee tastes too acidic, what can I do to balance it out?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Who are U2",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Name five teams in the German Bundesliga.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Classify each of the following as either pasta or bread: casarecce, gnocco fritto, gnocchi, focaccia, grissini, ciabatta, tonnarelli, orecchiette, conchiglie, piadina",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How many times have the Boston Celtics won the NBA championship?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Classify each of the following as supercar or hypercar:  Lamborghini Huracán, Ferrari 488GTB, Aston Martin Vantage, or Bugatti Veryron.",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "Which characters belong to DC or Marvel Universe? Jason Todd, Winter Soldier",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What are few things that could impact your EV range on long trips",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is GitHub?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "How often are the Olympics held?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What is positive cash flow?",
+    "positive": "(A)",
+    "negative": "(B)"
+  },
+  {
+    "question": "What was discovered in 1922 by Howard Carter",
+    "positive": "(A)",
+    "negative": "(B)"
+  }
+]

@@ -75,6 +75,11 @@ def resolve_model_name(name):
     return MODEL_ALIASES.get(name, name)
 
 
+def _is_qwen_family(model_name: str) -> bool:
+    """True for Qwen2.x / Qwen2.5 and DeepSeek-R1-Distill-Qwen (TransformerLens + hooks need eager attn)."""
+    return "qwen" in model_name.lower()
+
+
 def get_device(requested=None):
     if requested:
         return requested
@@ -110,10 +115,14 @@ def load_model(model_name, device=None, dtype=torch.bfloat16, n_devices=1, model
         print(f"  Using local weights from: {model_path}")
 
     tl_name = _TL_ARCHITECTURE_MAP.get(model_name)
-    needs_explicit_hf_model = tl_name or model_path
+    # Qwen: load HF weights with eager attention (SDPA/flash can break HookedTransformer hooks).
+    needs_explicit_hf_model = tl_name or model_path or _is_qwen_family(model_name)
 
     if needs_explicit_hf_model:
-        hf_model = AutoModelForCausalLM.from_pretrained(load_from, torch_dtype=dtype)
+        hf_kw = {"torch_dtype": dtype}
+        if _is_qwen_family(model_name):
+            hf_kw["attn_implementation"] = "eager"
+        hf_model = AutoModelForCausalLM.from_pretrained(load_from, **hf_kw)
         model = HookedTransformer.from_pretrained(
             tl_name or model_name,
             hf_model=hf_model, device=device, dtype=dtype, n_devices=n_devices,

@@ -47,7 +47,11 @@ from src.probe import train_probes, evaluate_probes, get_projection, get_verdict
 
 
 
-CONTRASTIVE_DATASET = "datasets/contrastive_dataset.json"
+_CONTRASTIVE_DATASETS = {
+    "default":  "datasets/contrastive_dataset.json",
+    "dolly":    "datasets/contrastive_dataset_dolly.json",
+    "wildchat": "datasets/contrastive_dataset_wildchat.json",
+}
 SENSITIVITY_DATASET = "datasets/sensitivity_dataset.json"
 OUTPUT_DIR = "output"
 
@@ -159,6 +163,12 @@ def main():
     )
     parser.add_argument("--output", default=None, help="Output JSON filename (default: timestamped)")
     parser.add_argument(
+        "--contrastive-dataset",
+        default="default",
+        choices=["default", "dolly", "wildchat"],
+        help="Contrastive training set (default: meta-question set)",
+    )
+    parser.add_argument(
         "--eval-dataset",
         default=DEFAULT_EVAL_DATASET,
         help=f"Path to Needham et al. dataset.json (default: {DEFAULT_EVAL_DATASET})",
@@ -192,9 +202,11 @@ def main():
     if args.load_probe:
         probes = load_probes(args.load_probe)
     else:
-        contrastive = load_contrastive_dataset(CONTRASTIVE_DATASET, tokenizer)
+        contrastive_path = _CONTRASTIVE_DATASETS[args.contrastive_dataset]
+        contrastive = load_contrastive_dataset(contrastive_path, tokenizer)
         probes = train_probes(model, contrastive, layers)
-        save_probes(probes, os.path.join(OUTPUT_DIR, "probes.pt"))
+        probe_tag = "" if args.contrastive_dataset == "default" else f"_{args.contrastive_dataset}"
+        save_probes(probes, os.path.join(OUTPUT_DIR, f"probes{probe_tag}.pt"))
 
     # Select best probe
     if len(probes) == 1:
@@ -222,7 +234,8 @@ def main():
         out_path = os.path.join(OUTPUT_DIR, args.output)
     else:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        out_path = os.path.join(OUTPUT_DIR, f"results_{timestamp}.json")
+        tag = "" if args.contrastive_dataset == "default" else f"_{args.contrastive_dataset}"
+        out_path = os.path.join(OUTPUT_DIR, f"results{tag}_{timestamp}.json")
 
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
