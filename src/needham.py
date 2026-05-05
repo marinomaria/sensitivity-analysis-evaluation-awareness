@@ -7,28 +7,27 @@ HuggingFace: https://huggingface.co/datasets/jjpn2/eval_awareness
 The dataset is an external dependency — it must be obtained separately.
 See README for setup instructions.
 """
-import csv
 import json
 from pathlib import Path
 
 from src.model import apply_chat_template_with_fallback
 
 
-_DEFAULT_CURATED_CSV = Path(__file__).resolve().parent.parent / "datasets" / "needham_curated.csv"
+_DEFAULT_ALLOWLIST_JSON = Path(__file__).resolve().parent.parent / "datasets" / "needham_allowlist.json"
 
 
-def _conversation_ids_with_keep_true(curated_csv_path: Path) -> set[str]:
-    """Load conversation_id values where the curated spreadsheet marks keep=TRUE."""
-    ids: set[str] = set()
-    with open(curated_csv_path, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            if row.get("keep", "").strip().upper() != "TRUE":
-                continue
-            cid = (row.get("conversation_id") or "").strip()
-            if cid:
-                ids.add(cid)
-    return ids
+def _load_allowlist_json(allowlist_path: Path) -> set[str]:
+    """Load Needham conversation IDs from the tracked curation manifest."""
+    with open(allowlist_path, encoding="utf-8") as f:
+        payload = json.load(f)
+
+    ids = payload.get("conversation_ids")
+    if not isinstance(ids, list):
+        raise ValueError(
+            f"Needham allowlist at '{allowlist_path}' must contain a conversation_ids list."
+        )
+
+    return {cid.strip() for cid in ids if isinstance(cid, str) and cid.strip()}
 
 
 SUPPORTED_ROLES = {"system", "user", "assistant"}
@@ -50,7 +49,7 @@ def load_needham_dataset(
     dataset_path: str,
     tokenizer,
     *,
-    curated_csv_path: str | Path | None = None,
+    allowlist_path: str | Path | None = None,
 ) -> list[dict]:
     """
     Load the Needham et al. dataset, filter to chat-only transcripts,
@@ -58,14 +57,14 @@ def load_needham_dataset(
 
     Filters:
     - Only entries where metadata.scaffold is null (chat transcripts)
-    - Only entries whose id appears in datasets/needham_curated.csv with keep=TRUE
+    - Only entries whose id appears in datasets/needham_allowlist.json
     - Skips tool messages within each conversation
     - Skips entries whose formatted prompt exceeds tokenizer.model_max_length
 
     Args:
         dataset_path: Path to dataset.json
         tokenizer: HuggingFace tokenizer (used to apply chat template)
-        curated_csv_path: Path to needham_curated.csv (default: datasets/needham_curated.csv)
+        allowlist_path: Path to needham_allowlist.json (default: datasets/needham_allowlist.json)
 
     Returns:
         List of dicts with keys:
@@ -86,18 +85,18 @@ def load_needham_dataset(
     # Filter to chat-only (scaffold is null)
     chat_entries = [e for e in raw if e["metadata"]["scaffold"] is None]
 
-    curated_path = Path(curated_csv_path) if curated_csv_path is not None else _DEFAULT_CURATED_CSV
-    if not curated_path.exists():
+    allowlist = Path(allowlist_path) if allowlist_path is not None else _DEFAULT_ALLOWLIST_JSON
+    if not allowlist.exists():
         raise FileNotFoundError(
-            f"Curated allowlist not found at '{curated_path}'. "
-            "Expected datasets/needham_curated.csv with conversation_id and keep columns."
+            f"Needham allowlist not found at '{allowlist}'. "
+            "Expected datasets/needham_allowlist.json with a conversation_ids list."
         )
-    keep_ids = _conversation_ids_with_keep_true(curated_path)
+    keep_ids = _load_allowlist_json(allowlist)
     before_curated = len(chat_entries)
     chat_entries = [e for e in chat_entries if e["id"] in keep_ids]
     print(
-        f"Curated filter (keep=TRUE): {before_curated} chat entries -> {len(chat_entries)} "
-        f"({len(keep_ids)} ids in spreadsheet)"
+        f"Needham allowlist: {before_curated} chat entries -> {len(chat_entries)} "
+        f"({len(keep_ids)} ids in manifest)"
     )
 
     n_eval = sum(1 for e in chat_entries if e["metadata"]["eval_category"])

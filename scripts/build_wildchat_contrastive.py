@@ -78,8 +78,7 @@ def main():
         random.seed(SEED)
         sampled = random.sample(entries, N_PAIRS)
 
-    # positive/negative are schema placeholders — load_contrastive_dataset() only reads 'question'
-    output = [{"question": q, "positive": "(A)", "negative": "(B)"} for q in sampled]
+    output = [{"stem": q} for q in sampled]
 
     with open(OUTPUT, "w") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)

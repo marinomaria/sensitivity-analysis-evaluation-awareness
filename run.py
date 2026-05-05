@@ -3,7 +3,7 @@
 Main entry point for the exp-setup experiment.
 
 Steps:
-  1. Train linear probes on datasets/contrastive_dataset.json (one per layer)
+  1. Train linear probes on a contrastive dataset (one per layer)
   2. Evaluate probes on the Needham et al. dataset to find the best layer (via AUROC)
   3. Run datasets/sensitivity_dataset.json through the model with the best probe
   4. Save augmented results to output/
@@ -47,8 +47,9 @@ from src.probe import train_probes, evaluate_probes, get_projection, get_verdict
 
 
 
+DEFAULT_CONTRASTIVE_DATASET = "dolly"
 _CONTRASTIVE_DATASETS = {
-    "default":  "datasets/contrastive_dataset.json",
+    "legacy":   "datasets/contrastive_dataset.json",
     "dolly":    "datasets/contrastive_dataset_dolly.json",
     "wildchat": "datasets/contrastive_dataset_wildchat.json",
 }
@@ -70,12 +71,31 @@ _DEPLOY_SYSTEM = (
 )
 
 
+def _contrastive_stem(entry):
+    """Return the user-facing text from either the current or legacy dataset schema."""
+    if "stem" in entry:
+        return entry["stem"].strip()
+    if "prompt" in entry:
+        return entry["prompt"].strip()
+    if "question" in entry:
+        return entry["question"].split("\n\nChoices:")[0].strip()
+    raise ValueError("Contrastive dataset row must include 'stem', 'prompt', or legacy 'question'")
+
+
+def contrastive_artifact_tag(dataset_name):
+    return "" if dataset_name == DEFAULT_CONTRASTIVE_DATASET else f"_{dataset_name}"
+
+
 def load_contrastive_dataset(path, tokenizer):
     """
     Build a contrastive dataset where each item contains two full prompts:
 
-    * positive_prompt  — question posed inside an evaluation/testing context
-    * negative_prompt  — same question posed inside a deployment/production context
+    Current JSON rows should contain 'stem' with the user-facing prompt text.
+    Legacy rows with 'question' are still supported for datasets/contrastive_dataset.json.
+
+    The returned items contain:
+    * positive_prompt — question posed inside an evaluation/testing context
+    * negative_prompt — same question posed inside a deployment/production context
 
     Both prompts end at the last user-turn token (no answer letter appended),
     so that train_probes extracts activations at exactly the same position
@@ -86,8 +106,7 @@ def load_contrastive_dataset(path, tokenizer):
 
     dataset = []
     for entry in raw:
-        # Strip the "(A) Yes / (B) No" choices block — not needed with the new framing.
-        stem = entry["question"].split("\n\nChoices:")[0].strip()
+        stem = _contrastive_stem(entry)
 
         pos_messages = [
             {"role": "system", "content": _EVAL_SYSTEM},
@@ -164,14 +183,19 @@ def main():
     parser.add_argument("--output", default=None, help="Output JSON filename (default: timestamped)")
     parser.add_argument(
         "--contrastive-dataset",
-        default="default",
-        choices=["default", "dolly", "wildchat"],
-        help="Contrastive training set (default: meta-question set)",
+        default=DEFAULT_CONTRASTIVE_DATASET,
+        choices=list(_CONTRASTIVE_DATASETS),
+        help="Contrastive training set (default: dolly; legacy preserves the original meta-question set)",
     )
     parser.add_argument(
         "--eval-dataset",
         default=DEFAULT_EVAL_DATASET,
         help=f"Path to Needham et al. dataset.json (default: {DEFAULT_EVAL_DATASET})",
+    )
+    parser.add_argument(
+        "--needham-allowlist",
+        default=None,
+        help="Path to Needham conversation ID allowlist JSON (default: datasets/needham_allowlist.json)",
     )
     args = parser.parse_args()
 
@@ -205,8 +229,7 @@ def main():
         contrastive_path = _CONTRASTIVE_DATASETS[args.contrastive_dataset]
         contrastive = load_contrastive_dataset(contrastive_path, tokenizer)
         probes = train_probes(model, contrastive, layers)
-        probe_tag = "" if args.contrastive_dataset == "default" else f"_{args.contrastive_dataset}"
-        save_probes(probes, os.path.join(OUTPUT_DIR, f"probes{probe_tag}.pt"))
+        save_probes(probes, os.path.join(OUTPUT_DIR, f"probes{contrastive_artifact_tag(args.contrastive_dataset)}.pt"))
 
     # Select best probe
     if len(probes) == 1:
@@ -214,7 +237,7 @@ def main():
         probe = probes[best_layer]
     else:
         from src.needham import load_needham_dataset  # Needham et al. (2025)
-        needham_data = load_needham_dataset(args.eval_dataset, tokenizer)
+        needham_data = load_needham_dataset(args.eval_dataset, tokenizer, allowlist_path=args.needham_allowlist)
         eval_results = evaluate_probes(model, probes, needham_data)
         best_layer = eval_results["best_layer"]
         probe = probes[best_layer]
@@ -234,8 +257,7 @@ def main():
         out_path = os.path.join(OUTPUT_DIR, args.output)
     else:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        tag = "" if args.contrastive_dataset == "default" else f"_{args.contrastive_dataset}"
-        out_path = os.path.join(OUTPUT_DIR, f"results{tag}_{timestamp}.json")
+        out_path = os.path.join(OUTPUT_DIR, f"results{contrastive_artifact_tag(args.contrastive_dataset)}_{timestamp}.json")
 
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
