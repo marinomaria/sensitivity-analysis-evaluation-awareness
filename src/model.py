@@ -6,35 +6,10 @@ import torch
 from transformer_lens import HookedTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# Known model aliases for convenience.
-# TransformerLens compatibility:
-#   - Qwen2.5 and DeepSeek-R1-Distill-Qwen-* use the Qwen2 architecture (supported).
-#   - DeepSeek-R1-Distill-Llama-* use the Llama architecture (supported).
-#   - DeepSeek-V2/V3/R1 (full) use MoE and are NOT supported by TransformerLens.
-MODEL_ALIASES = {
-    # Llama
-    "llama-1b":  "meta-llama/Llama-3.2-1B-Instruct",
-    "llama-70b": "meta-llama/Llama-3.3-70B-Instruct",
-    # Qwen2.5
-    "qwen-0.5b": "Qwen/Qwen2.5-0.5B-Instruct",
-    "qwen-7b":   "Qwen/Qwen2.5-7B-Instruct",
-    "qwen-72b":  "Qwen/Qwen2.5-72B-Instruct",
-    # DeepSeek-R1-Distill (Qwen base)
-    "deepseek-r1-1.5b": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-    "deepseek-r1-7b":   "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
-    # DeepSeek-R1-Distill (Llama base)
-    "deepseek-r1-8b":   "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
-    "deepseek-r1-70b":  "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
-}
+from src.aliases import TL_ARCHITECTURE_MAP, resolve_model_name
 
-# Maps models not in TransformerLens's whitelist to a compatible base architecture.
-# DeepSeek-R1-Distill models are architectural clones of their base models.
-_TL_ARCHITECTURE_MAP = {
-    "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B": "Qwen/Qwen2.5-1.5B-Instruct",
-    "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B":   "Qwen/Qwen2.5-7B-Instruct",
-    "deepseek-ai/DeepSeek-R1-Distill-Llama-8B":   "meta-llama/Llama-3.1-8B-Instruct",
-    "deepseek-ai/DeepSeek-R1-Distill-Llama-70B":  "meta-llama/Llama-3.3-70B-Instruct",
-}
+# Backwards-compat aliases for any external code that imported the private name.
+_TL_ARCHITECTURE_MAP = TL_ARCHITECTURE_MAP
 
 
 def apply_chat_template_with_fallback(tokenizer, messages):
@@ -71,10 +46,6 @@ def apply_chat_template_with_fallback(tokenizer, messages):
             raise original_exc from fallback_exc
 
 
-def resolve_model_name(name):
-    return MODEL_ALIASES.get(name, name)
-
-
 def _is_qwen_family(model_name: str) -> bool:
     """True for Qwen2.x / Qwen2.5 and DeepSeek-R1-Distill-Qwen (TransformerLens + hooks need eager attn)."""
     return "qwen" in model_name.lower()
@@ -95,7 +66,7 @@ def load_model(model_name, device=None, dtype=torch.bfloat16, n_devices=1, model
     Load a HookedTransformer model and its tokenizer.
 
     Args:
-        model_name: HuggingFace model ID or alias (see MODEL_ALIASES)
+        model_name: HuggingFace model ID or alias (see src/aliases.py:MODEL_ALIASES)
         device: Target device (defaults to best available)
         dtype: torch dtype
         n_devices: Number of GPUs to distribute the model across (default: 1)

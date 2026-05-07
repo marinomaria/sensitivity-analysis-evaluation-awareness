@@ -29,10 +29,9 @@ mkdir -p "${LOCAL_TARGET}"
 
 echo "Downloading artifacts from ${IP}:${PORT} to ${LOCAL_TARGET}/ ..."
 
-scp -P "${PORT}" -i "${SSH_KEY}" "root@${IP}:${REMOTE_BASE}/output/probes.pt" "${LOCAL_TARGET}/" 2>/dev/null || echo "  probes.pt not found (skipped)"
-scp -P "${PORT}" -i "${SSH_KEY}" "root@${IP}:${REMOTE_BASE}/output/results_*.json" "${LOCAL_TARGET}/" 2>/dev/null || echo "  results_*.json not found (skipped)"
-scp -P "${PORT}" -i "${SSH_KEY}" "root@${IP}:${REMOTE_BASE}/runpod_llama70b_50_*.log" "${LOCAL_TARGET}/" 2>/dev/null || echo "  llama70b log not found (skipped)"
-scp -P "${PORT}" -i "${SSH_KEY}" "root@${IP}:${REMOTE_BASE}/runpod_qwen72b_50_*.log" "${LOCAL_TARGET}/" 2>/dev/null || echo "  qwen72b log not found (skipped)"
+scp -P "${PORT}" -i "${SSH_KEY}" "root@${IP}:${REMOTE_BASE}/output/probes*.pt" "${LOCAL_TARGET}/" 2>/dev/null || echo "  output/probes*.pt not found (skipped)"
+scp -P "${PORT}" -i "${SSH_KEY}" "root@${IP}:${REMOTE_BASE}/output/results*.json" "${LOCAL_TARGET}/" 2>/dev/null || echo "  output/results*.json not found (skipped)"
+scp -P "${PORT}" -i "${SSH_KEY}" "root@${IP}:${REMOTE_BASE}/runpod_*.log" "${LOCAL_TARGET}/" 2>/dev/null || echo "  runpod_*.log not found (skipped)"
 
 echo
 echo "Done. Artifacts saved to: ${LOCAL_TARGET}/"

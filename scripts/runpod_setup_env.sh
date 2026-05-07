@@ -68,4 +68,15 @@ python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}, de
 echo
 echo "Setup complete. Next:"
 echo "  cd ${REPO_DIR}"
-echo "  bash scripts/runpod_run_llama70b_50.sh"
+echo
+echo "  # Generic runner — pre-downloads with stall-watchdog, then invokes run.py."
+echo "  # Model can be any alias from src/aliases.py:MODEL_ALIASES or a bare HF repo."
+echo "  bash scripts/runpod_run.sh <model> [extra run.py args...]"
+echo
+echo "  # Examples:"
+echo "  bash scripts/runpod_run.sh qwen-32b --n-gpus 2"
+echo "  bash scripts/runpod_run.sh llama-70b --n-gpus 2 --sensitivity-limit 50"
+echo "  bash scripts/runpod_run.sh gemma-27b --n-gpus 2"
+echo
+echo "  # Pre-download only (no run):"
+echo "  bash scripts/hf_download_with_watchdog.sh <hf_repo_id>"
