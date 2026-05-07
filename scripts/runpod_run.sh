@@ -3,16 +3,18 @@ set -euo pipefail
 
 # Run the experiment for any model in the registry.
 # Pre-downloads the model with the stall-watchdog, then invokes run.py.
-# All extra arguments after the model are forwarded to run.py verbatim.
+# Always passes --n-gpus 2 and --skip-generation to run.py (after any extra
+# args, so they cannot be overridden). Additional arguments after the model
+# are forwarded to run.py before those flags.
 #
 # Usage:
 #   bash scripts/runpod_run.sh <model> [extra run.py args...]
 #
 # Examples:
 #   bash scripts/runpod_run.sh qwen-32b
-#   bash scripts/runpod_run.sh llama-70b --n-gpus 2 --sensitivity-limit 50
-#   bash scripts/runpod_run.sh meta-llama/Llama-3.3-70B-Instruct --n-gpus 2
-#   bash scripts/runpod_run.sh gemma-27b --n-gpus 2 --sensitivity-limit 100
+#   bash scripts/runpod_run.sh llama-70b --sensitivity-limit 50
+#   bash scripts/runpod_run.sh meta-llama/Llama-3.3-70B-Instruct
+#   bash scripts/runpod_run.sh gemma-27b --sensitivity-limit 100
 
 if [[ ! -f "run.py" ]]; then
   echo "Error: run.py not found. Run from repo root (e.g. /workspace/exp-setup)."
@@ -57,7 +59,7 @@ echo "    extra args: $*"
 
 # Pass the alias (not the resolved repo ID) — run.py / src.model.load_model
 # handle the alias mapping, including TransformerLens architecture overrides.
-python run.py --model "${MODEL}" --device cuda "$@" 2>&1 | tee "${LOG_FILE}"
+python run.py --model "${MODEL}" --device cuda --n-gpus 2 "$@" --skip-generation 2>&1 | tee "${LOG_FILE}"
 
 echo
 echo "Run complete."

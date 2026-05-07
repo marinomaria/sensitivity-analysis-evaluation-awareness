@@ -131,19 +131,19 @@ def load_sensitivity_dataset(path):
         return json.load(f)
 
 
-def run_sensitivity(model, tokenizer, probe, sensitivity_dataset, max_new_tokens):
+def run_sensitivity(model, tokenizer, probe, sensitivity_dataset, max_new_tokens, skip_generation=False):
     results = []
     total = len(sensitivity_dataset)
     for i, item in enumerate(sensitivity_dataset):
         prompt = item["prompt"]
         print(f"[{i+1}/{total}] Processing: {prompt[:60]!r}...")
 
-        text_output = generate_text(model, tokenizer, prompt, max_new_tokens=max_new_tokens)
         projection = get_projection(model, probe, prompt)
         verdict = get_verdict(projection, probe)
 
         result = dict(item)
-        result["text_output"] = text_output
+        if not skip_generation:
+            result["text_output"] = generate_text(model, tokenizer, prompt, max_new_tokens=max_new_tokens)
         result["probe_projection"] = projection
         result["probe_verdict"] = verdict
         results.append(result)
@@ -174,6 +174,15 @@ def main():
     )
     parser.add_argument("--load-probe", default=None, help="Path to saved probe .pt file (skip training)")
     parser.add_argument("--max-new-tokens", type=int, default=200)
+    parser.add_argument(
+        "--skip-generation",
+        action="store_true",
+        help=(
+            "Skip text generation in the sensitivity loop; only compute probe "
+            "projection and verdict per record. Forward-pass-only — orders of "
+            "magnitude faster, especially for reasoning models."
+        ),
+    )
     parser.add_argument(
         "--sensitivity-limit",
         type=int,
@@ -250,14 +259,18 @@ def main():
             parser.error("--sensitivity-limit must be >= 0")
         sensitivity = sensitivity[:args.sensitivity_limit]
         print(f"Using {len(sensitivity)} sensitivity records (--sensitivity-limit={args.sensitivity_limit})")
-    results = run_sensitivity(model, tokenizer, probe, sensitivity, args.max_new_tokens)
+    results = run_sensitivity(
+        model, tokenizer, probe, sensitivity, args.max_new_tokens,
+        skip_generation=args.skip_generation,
+    )
 
     # Save output
     if args.output:
         out_path = os.path.join(OUTPUT_DIR, args.output)
     else:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        out_path = os.path.join(OUTPUT_DIR, f"results{contrastive_artifact_tag(args.contrastive_dataset)}_{timestamp}.json")
+        mode_tag = "_probeonly" if args.skip_generation else ""
+        out_path = os.path.join(OUTPUT_DIR, f"results{contrastive_artifact_tag(args.contrastive_dataset)}{mode_tag}_{timestamp}.json")
 
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
