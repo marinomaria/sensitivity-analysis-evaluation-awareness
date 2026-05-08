@@ -10,11 +10,12 @@ set -euo pipefail
 # resumable, so the kill costs nothing.
 #
 # Usage:
-#   bash scripts/hf_download_with_watchdog.sh <repo_id> [extra hf-cli args...]
+#   bash scripts/hf_download_with_watchdog.sh <model_alias_or_repo_id> [extra hf-cli args...]
 #
 # Examples:
+#   bash scripts/hf_download_with_watchdog.sh gemma-27b
+#   bash scripts/hf_download_with_watchdog.sh llama-70b
 #   bash scripts/hf_download_with_watchdog.sh meta-llama/Llama-3.3-70B-Instruct
-#   bash scripts/hf_download_with_watchdog.sh google/gemma-2-27b-it
 #
 # Env (with defaults):
 #   HF_HOME                = /workspace/hf-cache
@@ -25,13 +26,27 @@ set -euo pipefail
 #   HF_DOWNLOAD_EXCLUDE    = "original/* *.gguf"   (skip redundant Meta-original
 #                                                   weights and gguf quantizations)
 
-REPO_ID="${1:?Usage: $0 <repo_id> [extra hf-cli args...]}"
+MODEL="${1:?Usage: $0 <model_alias_or_repo_id> [extra hf-cli args...]}"
 shift || true
+
+# Activate venv so huggingface-cli is available (no-op outside RunPod)
+if [[ -f "/root/venvs/exp-setup/bin/activate" ]]; then
+  # shellcheck disable=SC1091
+  source /root/venvs/exp-setup/bin/activate
+fi
 
 export HF_HOME="${HF_HOME:-/workspace/hf-cache}"
 export HUGGINGFACE_HUB_CACHE="${HUGGINGFACE_HUB_CACHE:-${HF_HOME}/hub}"
 export HF_HUB_DISABLE_XET="${HF_HUB_DISABLE_XET:-1}"
 export HF_HUB_ENABLE_HF_TRANSFER="${HF_HUB_ENABLE_HF_TRANSFER:-0}"
+
+# Resolve alias → HF repo ID (src/aliases.py is torch-free; falls back to
+# the raw input when the module isn't importable or the alias isn't registered)
+if [[ -f "src/aliases.py" ]]; then
+  REPO_ID=$(python -m src.aliases "${MODEL}" 2>/dev/null || echo "${MODEL}")
+else
+  REPO_ID="${MODEL}"
+fi
 
 STALL_THRESHOLD="${STALL_THRESHOLD:-180}"
 POLL_INTERVAL="${POLL_INTERVAL:-30}"
@@ -96,23 +111,32 @@ while (( attempt < MAX_ATTEMPTS )); do
     fi
   done
 
+  if (( killed == 1 )); then
+    # The process may be in uninterruptible I/O wait (D state): kill -9 sent
+    # the signal but the kernel won't deliver it until the stalled write
+    # resolves. Calling wait here would hang indefinitely — the same freeze
+    # we're trying to escape. Disown the process so bash stops tracking it;
+    # it will exit on its own when the I/O finally errors out, and the next
+    # huggingface-cli download will resume from the same partial files.
+    disown "${DL_PID}" 2>/dev/null || true
+    echo "    killed by watchdog (orphaned PID ${DL_PID}); resuming in 5s..."
+    sleep 5
+    continue
+  fi
+
   set +e
   wait "${DL_PID}"
   exit_code=$?
   set -e
 
-  if (( killed == 0 )) && (( exit_code == 0 )); then
+  if (( exit_code == 0 )); then
     echo "=== [${REPO_ID}] download succeeded on attempt ${attempt} ==="
     exit 0
   fi
 
-  if (( killed == 1 )); then
-    echo "    killed by watchdog; resuming in 5s..."
-  else
-    echo "    download exited with code ${exit_code}; retrying in 5s..."
-    echo "    last log lines:"
-    tail -n 5 "${LOG_FILE}" | sed 's/^/      /'
-  fi
+  echo "    download exited with code ${exit_code}; retrying in 5s..."
+  echo "    last log lines:"
+  tail -n 5 "${LOG_FILE}" | sed 's/^/      /'
   sleep 5
 done
 
