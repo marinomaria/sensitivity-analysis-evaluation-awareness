@@ -37,6 +37,7 @@ Usage:
 import argparse
 import json
 import os
+import random
 from datetime import datetime
 from pathlib import Path
 
@@ -187,7 +188,7 @@ def main():
         "--sensitivity-limit",
         type=int,
         default=None,
-        help="Use only the first N records from the sensitivity dataset",
+        help="Randomly sample N records (without replacement) from the sensitivity dataset",
     )
     parser.add_argument("--output", default=None, help="Output JSON filename (default: timestamped)")
     parser.add_argument(
@@ -257,8 +258,12 @@ def main():
     if args.sensitivity_limit is not None:
         if args.sensitivity_limit < 0:
             parser.error("--sensitivity-limit must be >= 0")
-        sensitivity = sensitivity[:args.sensitivity_limit]
-        print(f"Using {len(sensitivity)} sensitivity records (--sensitivity-limit={args.sensitivity_limit})")
+        k = min(args.sensitivity_limit, len(sensitivity))
+        sensitivity = random.sample(sensitivity, k)
+        print(
+            f"Using {len(sensitivity)} sensitivity records "
+            f"(sampled without replacement, requested --sensitivity-limit={args.sensitivity_limit})"
+        )
     results = run_sensitivity(
         model, tokenizer, probe, sensitivity, args.max_new_tokens,
         skip_generation=args.skip_generation,
