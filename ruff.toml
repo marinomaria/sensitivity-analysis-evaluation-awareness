@@ -1,0 +1,7 @@
+line-length = 120
+
+[lint]
+extend-select = ["E712", "E741"]
+
+[format]
+quote-style = "preserve"

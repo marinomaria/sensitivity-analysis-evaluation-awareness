@@ -43,10 +43,8 @@ from pathlib import Path
 
 import torch
 
-from src.model import load_model, generate_text, get_device, apply_chat_template_with_fallback
-from src.probe import train_probes, evaluate_probes, get_projection, get_verdict, save_probes, load_probes
-
-
+from src.model import apply_chat_template_with_fallback, generate_text, get_device, load_model
+from src.probe import evaluate_probes, get_projection, get_verdict, load_probes, save_probes, train_probes
 
 DEFAULT_CONTRASTIVE_DATASET = "dolly"
 _CONTRASTIVE_DATASETS = {
@@ -137,14 +135,19 @@ def run_sensitivity(model, tokenizer, probe, sensitivity_dataset, max_new_tokens
     total = len(sensitivity_dataset)
     for i, item in enumerate(sensitivity_dataset):
         prompt = item["prompt"]
+        formatted = apply_chat_template_with_fallback(
+            tokenizer, [{"role": "user", "content": prompt}]
+        )
+        if i == 0:
+            print(f"Chat-formatted prompt (first record):\n{formatted!r}\n")
         print(f"[{i+1}/{total}] Processing: {prompt[:60]!r}...")
 
-        projection = get_projection(model, probe, prompt)
+        projection = get_projection(model, probe, formatted)
         verdict = get_verdict(projection, probe)
 
         result = dict(item)
         if not skip_generation:
-            result["text_output"] = generate_text(model, tokenizer, prompt, max_new_tokens=max_new_tokens)
+            result["text_output"] = generate_text(model, tokenizer, formatted, max_new_tokens=max_new_tokens)
         result["probe_projection"] = projection
         result["probe_verdict"] = verdict
         results.append(result)
@@ -273,7 +276,7 @@ def main():
     if args.output:
         out_path = os.path.join(OUTPUT_DIR, args.output)
     else:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S") # noqa: DTZ005
         mode_tag = "_probeonly" if args.skip_generation else ""
         out_path = os.path.join(OUTPUT_DIR, f"results{contrastive_artifact_tag(args.contrastive_dataset)}{mode_tag}_{timestamp}.json")
 

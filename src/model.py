@@ -113,18 +113,26 @@ def load_model(model_name, device=None, dtype=torch.bfloat16, n_devices=1, model
 
 def generate_text(model, tokenizer, prompt, max_new_tokens=200):
     """
-    Generate a text response for a prompt.
+    Generate a text response for an already chat-formatted prompt.
+
+    `prompt` must already have the chat template applied (see
+    apply_chat_template_with_fallback) — this function does not apply it.
+
+    Tokenization goes through model.to_tokens, the same path probe.py uses to
+    extract activations, so the tokens generated from are byte-identical to the
+    tokens the probe reads. Using tokenizer.encode here instead would add its
+    own special tokens on top of the template and desync the two.
 
     Args:
         model: HookedTransformer model
-        tokenizer: tokenizer
-        prompt: input string
+        tokenizer: tokenizer (used only for decoding)
+        prompt: chat-formatted input string
         max_new_tokens: maximum tokens to generate
 
     Returns:
         str: generated text (excluding the prompt)
     """
-    input_ids = tokenizer.encode(prompt, return_tensors="pt").to(model.cfg.device)
+    input_ids = model.to_tokens(prompt)
 
     model.reset_hooks()
     with torch.no_grad():
