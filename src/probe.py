@@ -159,6 +159,71 @@ def get_projection(model, probe, prompt):
     return projection
 
 
+def get_token_projections(model, probes, prompt, layers=None):
+    """
+    Project *every* token position onto each probe vector, for every layer.
+
+    A single forward pass already computes the residual stream at all positions
+    and all layers, so this costs the same as one get_projection() call. The
+    projection is taken inside the hook, so only n_layers x seq_len floats are
+    kept — never the full n_layers x seq_len x d_model activation tensor.
+
+    Two readings are returned per position:
+      - 'projection': raw dot product, comparable to what get_projection returns
+        at the last position. Note that residual-stream norm grows with depth and
+        position, so magnitude alone can dominate a heatmap.
+      - 'cosine': the same quantity divided by the activation norm (the probe
+        vector is unit-norm), which isolates direction from magnitude.
+
+    Caveat: probes are trained on last-token activations only, so probe['threshold']
+    is not meaningful at mid-sequence positions. Read these values as relative.
+
+    Args:
+        model: HookedTransformer model
+        probes: dict mapping layer index to probe dict (as returned by train_probes)
+        prompt: chat-formatted input string
+        layers: optional subset of layers to read (default: all layers in probes)
+
+    Returns:
+        tuple: (str_tokens, result) where str_tokens is a list of seq_len strings and
+        result is {'layers': [...], 'projection': Tensor[n_layers, seq_len],
+        'cosine': Tensor[n_layers, seq_len]}
+    """
+    layers = sorted(probes) if layers is None else sorted(layers)
+
+    tokens = model.to_tokens(prompt)
+    raw = {}
+    cos = {}
+
+    def make_hook(layer):
+        probe_vector = probes[layer]["vector"]
+
+        def hook_fn(activation, hook):
+            acts = activation[0]  # [seq, d_model]
+            vector = probe_vector.to(device=acts.device, dtype=acts.dtype)[0]
+            proj = acts @ vector
+            norms = acts.norm(dim=-1).clamp_min(1e-6)
+            raw[layer] = proj.float().cpu()
+            cos[layer] = (proj / norms).float().cpu()
+            return activation
+
+        return hook_fn
+
+    model.reset_hooks()
+    hooks = [(f"blocks.{layer}.hook_resid_pre", make_hook(layer)) for layer in layers]
+    with model.hooks(fwd_hooks=hooks):
+        with torch.no_grad():
+            model(tokens)
+
+    str_tokens = model.to_str_tokens(tokens[0])
+    result = {
+        "layers": layers,
+        "projection": torch.stack([raw[l] for l in layers]),
+        "cosine": torch.stack([cos[l] for l in layers]),
+    }
+    return str_tokens, result
+
+
 def get_verdict(projection, probe):
     """Return True if projection >= threshold (evaluation-aware)."""
     return projection >= probe["threshold"]

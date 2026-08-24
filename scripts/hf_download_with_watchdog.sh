@@ -23,8 +23,8 @@ set -euo pipefail
 #   STALL_THRESHOLD        = 180   (seconds without disk growth before kill)
 #   POLL_INTERVAL          = 30    (seconds between size polls)
 #   MAX_ATTEMPTS           = 20
-#   HF_DOWNLOAD_EXCLUDE    = "original/* *.gguf"   (skip redundant Meta-original
-#                                                   weights and gguf quantizations)
+#   HF_DOWNLOAD_EXCLUDE    = "original/* *.pth *.gguf"  (skip redundant
+#                              Meta-original weights and gguf quantizations)
 
 MODEL="${1:?Usage: $0 <model_alias_or_repo_id> [extra hf-cli args...]}"
 shift || true
@@ -51,17 +51,22 @@ fi
 STALL_THRESHOLD="${STALL_THRESHOLD:-180}"
 POLL_INTERVAL="${POLL_INTERVAL:-30}"
 MAX_ATTEMPTS="${MAX_ATTEMPTS:-20}"
-HF_DOWNLOAD_EXCLUDE="${HF_DOWNLOAD_EXCLUDE:-original/* *.gguf}"
+HF_DOWNLOAD_EXCLUDE="${HF_DOWNLOAD_EXCLUDE:-original/* *.pth *.gguf}"
 
 mkdir -p "${HUGGINGFACE_HUB_CACHE}"
 
-# Build --exclude args from space-separated patterns
+# Build a SINGLE --exclude flag carrying every pattern.
+#
+# huggingface-cli defines --exclude with nargs="*" and no action="append", so
+# argparse OVERWRITES on a repeated flag instead of accumulating. Emitting one
+# flag per pattern (--exclude A --exclude B) silently keeps only B. That is how
+# a Llama-70B download blew past a 200 GB volume: "original/*" was dropped in
+# favour of "*.gguf", and the ~140 GB of Meta-original .pth weights came down
+# on top of the safetensors.
 EXCLUDE_ARGS=()
 if [[ -n "${HF_DOWNLOAD_EXCLUDE}" ]]; then
   read -ra EXCLUDE_PATTERNS <<<"${HF_DOWNLOAD_EXCLUDE}"
-  for pat in "${EXCLUDE_PATTERNS[@]}"; do
-    EXCLUDE_ARGS+=(--exclude "$pat")
-  done
+  EXCLUDE_ARGS=(--exclude "${EXCLUDE_PATTERNS[@]}")
 fi
 
 LOG_DIR="/tmp/hf_watchdog"
